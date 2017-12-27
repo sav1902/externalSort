@@ -35,6 +35,7 @@ public class ExternalSortTest {
 
     @Test
     public void defaultSorterTest() throws IOException {
+        System.out.println("defaultSorterTest");
         Path resultFilePath = Paths.get(sourceFilePath.toString() + ".defaultSorterTest.sorted");
 
         Date start = new Date();
@@ -50,6 +51,7 @@ public class ExternalSortTest {
 
     @Test
     public void mergeSorterTest() throws IOException {
+        System.out.println("mergeSorterTest");
         Path resultFilePath = Paths.get(sourceFilePath.toString() + ".mergeSorterTest.sorted");
 
         Date start = new Date();
@@ -65,6 +67,7 @@ public class ExternalSortTest {
 
     @Test
     public void googleSortTest() throws IOException {
+        System.out.println("googleSortTest");
         Path resultFilePath = Paths.get(sourceFilePath.toString() + ".googleSortTest.sorted");
         Date start = new Date();
         System.out.println("Started: " +dateFormat.format(start));
