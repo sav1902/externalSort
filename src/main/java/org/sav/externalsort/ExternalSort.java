@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,11 +40,7 @@ public class ExternalSort {
     public static void sort(Path sourceFile, Path resultFile, Charset charset, Sorter sorter, Path tmpDir) {
         try {
             List<Path> files = sorter.splitAndSort(sourceFile.toRealPath(), tmpDir, charset);
-            Date date = new Date();
-            System.out.println("SplittedAndSorted: " + dateFormat.format(date));
             Merger.mergeSortedFiles(files, resultFile.toAbsolutePath());
-            date = new Date();
-            System.out.println("Merged: " + dateFormat.format(date));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
