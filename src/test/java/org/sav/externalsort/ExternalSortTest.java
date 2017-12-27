@@ -3,9 +3,11 @@ package org.sav.externalsort;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sav.externalsort.sorters.MergeSorter;
+import org.sav.externalsort.utils.TestFileCreator;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,29 +19,31 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Created by Andrey.Shilov on 20.10.2017.
+ * Created by Andrey.Shilov
  */
 public class ExternalSortTest {
     private static DateFormat dateFormat =  new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
-    private static Path tempDir;
+    private static int linesCount = 10_000_000;
+    private static Path sourceFilePath;
+    private static Path testDir;
 
     @BeforeClass
     public static void beforeClass() throws IOException {
-        //tempDir = Files.createTempDirectory(Paths.get(""), "sortTmp");
+        testDir = Files.createTempDirectory(Paths.get("target"), "sortTest");
+        sourceFilePath = TestFileCreator.createTestFile(testDir, ExternalSort.DEFAULT_CHARSET, linesCount);
     }
 
     @Test
     public void defaultSorterTest() throws IOException {
-        Path sourceFilePath = Paths.get("files/test_10_000_000.csv");
-        Path resultFilePath = Paths.get(sourceFilePath.toString() + ".sorted");
+        Path resultFilePath = Paths.get(sourceFilePath.toString() + ".defaultSorterTest.sorted");
 
         Date start = new Date();
-        System.out.println("Started: " +dateFormat.format(start));
+        System.out.println("Started: " + dateFormat.format(start));
         ExternalSort.sort(sourceFilePath, resultFilePath);
         Date end = new Date();
-        System.out.println("Sorted: " +dateFormat.format(end));
-        System.out.println("Sorted: " +dateFormat.format(end.getTime() - start.getTime()));
+        System.out.println("Sorted: " + dateFormat.format(end));
+        System.out.println("Time: " + (end.getTime() - start.getTime()));
 
         //assertEquals("", sourceFilePath.toFile().length(), resultFilePath.toFile().length());
         assertFileSorted(resultFilePath);
@@ -47,15 +51,14 @@ public class ExternalSortTest {
 
     @Test
     public void mergeSorterTest() throws IOException {
-        Path sourceFilePath = Paths.get("files/test_1_000_000.csv");
-        Path resultFilePath = Paths.get(sourceFilePath.toString() + ".sorted");
+        Path resultFilePath = Paths.get(sourceFilePath.toString() + ".mergeSorterTest.sorted");
 
         Date start = new Date();
-        System.out.println("Started: " +dateFormat.format(start));
+        System.out.println("Started: " + dateFormat.format(start));
         ExternalSort.sort(sourceFilePath, resultFilePath, new MergeSorter());
         Date end = new Date();
-        System.out.println("Sorted: " +dateFormat.format(end));
-        System.out.println("Sorted: " +dateFormat.format(end.getTime() - start.getTime()));
+        System.out.println("Sorted: " + dateFormat.format(end));
+        System.out.println("Time: " + (end.getTime() - start.getTime()));
 
         //assertEquals("", sourceFilePath.toFile().length(), resultFilePath.toFile().length());
         assertFileSorted(resultFilePath);
@@ -63,16 +66,15 @@ public class ExternalSortTest {
 
     @Test
     public void googleSortTest() throws IOException {
-        Path sourceFilePath = Paths.get("files/test_10_000_000.csv");
-        Path resultFilePath = Paths.get(sourceFilePath.toString() + ".sorted.google");
+        Path resultFilePath = Paths.get(sourceFilePath.toString() + ".googleSortTest.sorted");
         Date start = new Date();
         System.out.println("Started: " +dateFormat.format(start));
         com.google.code.externalsorting.ExternalSort.sort(sourceFilePath.toFile(), resultFilePath.toFile());
         Date end = new Date();
-        System.out.println("Sorted: " +dateFormat.format(end));
-        System.out.println("Sorted: " +dateFormat.format(end.getTime() - start.getTime()));
+        System.out.println("Sorted: " + dateFormat.format(end));
+        System.out.println("Time: " + (end.getTime() - start.getTime()));
 
-        assertEquals("", sourceFilePath.toFile().length(), resultFilePath.toFile().length());
+        //assertEquals("", sourceFilePath.toFile().length(), resultFilePath.toFile().length());
         assertFileSorted(resultFilePath);
     }
 
@@ -80,13 +82,16 @@ public class ExternalSortTest {
         try(BufferedReader reader = Files.newBufferedReader(sortedFilePath)) {
             String previousLine = null;
             String currentLine;
+            int lines = 0;
             while ( (currentLine = reader.readLine()) != null) {
-                if (previousLine != null) {
-                    assertTrue("", previousLine.compareTo(currentLine) <= 0);
+                lines++;
+                if (null != previousLine) {
+                    assertTrue("", 0 >= previousLine.compareTo(currentLine));
                 }
 
                 previousLine = currentLine;
             }
+            assertEquals("", linesCount, lines);
         }
     }
 }

@@ -2,9 +2,7 @@ package org.sav.externalsort.sorters;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 import org.sav.externalsort.utils.DurstenfeldMix;
 
 import java.text.DateFormat;
@@ -14,9 +12,8 @@ import java.util.Date;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Created by Andrey.Shilov on 28.11.2017.
+ * Created by Andrey.Shilov
  */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ArrayMergeSortTest {
     private DateFormat dateFormat =  new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
     private static String[] sourceArray;
@@ -49,7 +46,7 @@ public class ArrayMergeSortTest {
 
         String  prev = testArray[0];
         for (int i = 1; i < testArray.length; i++) {
-            assertTrue("", prev.compareTo(testArray[i]) < 0);
+            assertTrue("", 0> prev.compareTo(testArray[i]));
             prev = testArray[i];
         }
     }
@@ -65,7 +62,7 @@ public class ArrayMergeSortTest {
 
         String  prev = testArray[0];
         for (int i = 1; i < testArray.length; i++) {
-            assertTrue("", prev.compareTo(testArray[i]) < 0);
+            assertTrue("", 0 > prev.compareTo(testArray[i]));
             prev = testArray[i];
         }
     }

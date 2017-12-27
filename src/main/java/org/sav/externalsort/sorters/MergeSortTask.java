@@ -3,7 +3,7 @@ package org.sav.externalsort.sorters;
 import java.util.concurrent.RecursiveAction;
 
 /**
- * Created by Andrey.Shilov on 28.11.2017.
+ * Created by Andrey.Shilov
  */
 public class MergeSortTask extends RecursiveAction {
 

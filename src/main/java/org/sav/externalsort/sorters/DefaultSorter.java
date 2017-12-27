@@ -5,6 +5,7 @@ import org.sav.externalsort.Sorter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import java.util.List;
 public class DefaultSorter implements Sorter {
 
     @Override
-    public List<Path> splitAndSort(Path sourceFile, Path tmpDir) {
+    public List<Path> splitAndSort(Path sourceFile, Path tmpDir, Charset charset) {
         List<Path> files = new LinkedList<>();
         try(BufferedReader reader = Files.newBufferedReader(sourceFile)) {
             long length = 0;
@@ -31,14 +32,14 @@ public class DefaultSorter implements Sorter {
                     arrayList.add(line);
                 } else {
                     Collections.sort(arrayList);
-                    files.add(saveToTmpFile(arrayList, tmpDir, files.size()));
+                    files.add(saveToTmpFile(arrayList, tmpDir, files.size(), charset));
                     length = line.length();
                     arrayList = new ArrayList<>();
                     arrayList.add(line);
                 }
             }
             Collections.sort(arrayList);
-            files.add(saveToTmpFile(arrayList, tmpDir, files.size()));
+            files.add(saveToTmpFile(arrayList, tmpDir, files.size(), charset));
         } catch (IOException e) {
             throw  new UncheckedIOException(e);
         }

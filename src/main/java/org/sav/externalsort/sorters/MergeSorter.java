@@ -5,6 +5,7 @@ import org.sav.externalsort.Sorter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class MergeSorter implements Sorter {
     private static final int PARALLEL_THRESHOLD = Runtime.getRuntime().availableProcessors();
 
     @Override
-    public List<Path> splitAndSort(Path sourceFile, Path tmpDir) {
+    public List<Path> splitAndSort(Path sourceFile, Path tmpDir, Charset charset) {
         List<Path> files = new LinkedList<>();
         try(BufferedReader reader = Files.newBufferedReader(sourceFile)) {
             long length = 0;
@@ -36,12 +37,12 @@ public class MergeSorter implements Sorter {
                     arrayList.add(line);
 
                     sort(strings);
-                    files.add(saveToTmpFile(strings, tmpDir, files.size()));
+                    files.add(saveToTmpFile(strings, tmpDir, files.size(), charset));
                 }
             }
             String[] strings = arrayList.toArray(new String[arrayList.size()]);
             sort(strings);
-            files.add(saveToTmpFile(strings, tmpDir, files.size()));
+            files.add(saveToTmpFile(strings, tmpDir, files.size(), charset));
         } catch (IOException e) {
             throw  new UncheckedIOException(e);
         }

@@ -11,17 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Andrey.Shilov on 25.12.2017.
+ * Created by Andrey.Shilov
  */
 public interface Sorter {
-    Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     int DEFAULT_TMP_FILE_SIZE_BYTES = 1024*1024*100;
 
-    List<Path> splitAndSort(Path sourceFile, Path tmpDir);
+    List<Path> splitAndSort(Path sourceFile, Path tmpDir, Charset charset);
 
-    default Path saveToTmpFile(Iterable<String> strings, Path tmpDir, int fileIndex) throws IOException {
+    default Path saveToTmpFile(Iterable<String> strings, Path tmpDir, int fileIndex, Charset charset) throws IOException {
         Path tmpFile = Files.createTempFile(tmpDir, "sorted", ".part." + String.valueOf(fileIndex));
-        try(BufferedWriter writer = Files.newBufferedWriter(tmpFile, DEFAULT_CHARSET, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);) {
+        try(BufferedWriter writer = Files.newBufferedWriter(tmpFile, charset, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);) {
             for (String string : strings) {
                 writer.write(string);
                 writer.newLine();
@@ -31,9 +30,9 @@ public interface Sorter {
         return tmpFile;
     }
 
-    default Path saveToTmpFile(String[] strings, Path tmpDir, int fileIndex) throws IOException {
+    default Path saveToTmpFile(String[] strings, Path tmpDir, int fileIndex, Charset charset) throws IOException {
         Path tmpFile = Files.createTempFile(tmpDir, "sorted", ".part." + String.valueOf(fileIndex));
-        try(BufferedWriter writer = Files.newBufferedWriter(tmpFile, DEFAULT_CHARSET, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);) {
+        try(BufferedWriter writer = Files.newBufferedWriter(tmpFile, charset, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);) {
             for (String string : strings) {
                 writer.write(string);
                 writer.newLine();

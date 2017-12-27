@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Created by Andrey.Shilov on 26.12.2017.
+ * Created by Andrey.Shilov
  */
 public class Merger {
 

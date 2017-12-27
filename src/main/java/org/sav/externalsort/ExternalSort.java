@@ -1,6 +1,7 @@
 package org.sav.externalsort;
 
 import org.sav.externalsort.sorters.DefaultSorter;
+import org.sav.externalsort.utils.FileUtils;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -15,27 +16,32 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Andrey.Shilov on 20.10.2017.
+ * Created by Andrey.Shilov
  */
 public class ExternalSort {
-    private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+    public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static final DefaultSorter DEFAULT_SORTER = new DefaultSorter();
 
     private static DateFormat dateFormat =  new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-    private static final int DEFAULT_TMP_FILE_SIZE_BYTES = 1024*1024*10;
-
 
     public static void sort(Path sourceFile, Path resultFile) {
         sort(sourceFile, resultFile, DEFAULT_SORTER);
     }
 
     public static void sort(Path sourceFile, Path resultFile, Sorter sorter) {
+        sort(sourceFile, resultFile, DEFAULT_CHARSET, sorter);
+    }
+
+    public static void sort(Path sourceFile, Path resultFile, Charset charset, Sorter sorter) {
+            Path tmpDir = createTempDirectory(sourceFile.getFileName().toString()  + ".");
+            sort(sourceFile, resultFile, charset, sorter, tmpDir);
+            FileUtils.deleteDirectory(tmpDir);
+    }
+
+    public static void sort(Path sourceFile, Path resultFile, Charset charset, Sorter sorter, Path tmpDir) {
         try {
-            Path tmpDir = Files.createTempDirectory(Paths.get(""), "externalsort");
+            List<Path> files = sorter.splitAndSort(sourceFile.toRealPath(), tmpDir, charset);
             Date date = new Date();
-            System.out.println("Started: " + dateFormat.format(date));
-            List<Path> files = sorter.splitAndSort(sourceFile.toRealPath(), tmpDir);
-            date = new Date();
             System.out.println("SplittedAndSorted: " + dateFormat.format(date));
             Merger.mergeSortedFiles(files, resultFile.toAbsolutePath());
             date = new Date();
@@ -44,5 +50,14 @@ public class ExternalSort {
             throw new UncheckedIOException(e);
         }
     }
+
+    private static Path createTempDirectory(String prefix) {
+        try {
+            return Files.createTempDirectory(Paths.get(""), prefix);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
 
 }
